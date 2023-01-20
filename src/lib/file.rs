@@ -33,9 +33,6 @@ impl FileMetaData {
 
 pub fn process(path: &str) -> () {
   let metadata = FileMetaData::new(&path);
-  println!("Name: {}", metadata.name);
-  println!("Directory: {}", metadata.directory);
-  println!("path: {}", metadata.path);
   convert_to_png(metadata.path, metadata.name);
   compress_image_folder();
 }
