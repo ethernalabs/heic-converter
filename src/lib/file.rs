@@ -41,10 +41,10 @@ pub fn process(path: &str) -> () {
 }
 
 fn compress_image_folder() -> () {
-  let origin = PathBuf::from("output/uncompressed");   // original directory path
-  let dest = PathBuf::from("output/compressed");       // destination directory path
-  let thread_count = 4;                       // number of threads
-  let (tx, tr) = mpsc::channel();             // Sender and Receiver. for more info, check mpsc and message passing. 
+  let origin = PathBuf::from("output/uncompressed");
+  let dest = PathBuf::from("output/compressed");
+  let thread_count = 4;
+  let (tx, tr) = mpsc::channel();
 
   let mut comp = FolderCompressor::new(origin, dest);
   comp.set_cal_func(|width, height, file_size| {return Factor::new(75., 0.7)});
