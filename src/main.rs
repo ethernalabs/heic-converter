@@ -12,9 +12,9 @@ fn main() {
   // if not create
   match Path::new("output").try_exists() {
       Ok(exist) => if !exist {
-        fs::create_dir("output");
-        fs::create_dir("output/uncompressed");
-        fs::create_dir("output/compressed");
+        fs::create_dir("output").expect("Can't create folder");
+        fs::create_dir("output/uncompressed").expect("Can't create folder");
+        fs::create_dir("output/compressed").expect("Can't create folder");
       }
       Err(_) => ()
   }

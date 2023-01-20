@@ -33,19 +33,19 @@ impl FileMetaData {
 
 pub fn process(path: &str) -> () {
   let metadata = FileMetaData::new(&path);
-  convert_to_png(metadata.path, metadata.name);
+  convert_to_png(metadata.path, metadata.name).expect("Can't convert to PNG");
   compress_image_folder();
 }
 
 fn compress_image_folder() -> () {
   let origin = PathBuf::from("output/uncompressed");
   let dest = PathBuf::from("output/compressed");
-  let thread_count = 4;
-  let (tx, tr) = mpsc::channel();
+  let thread_count: u32= 4;
+  let (tx, _tr) = mpsc::channel();
 
   let mut comp = FolderCompressor::new(origin, dest);
-  comp.set_cal_func(|width, height, file_size| {return Factor::new(75., 0.7)});
-  comp.set_thread_count(4);
+  comp.set_factor(Factor::new(75., 0.7));
+  comp.set_thread_count(thread_count);
   comp.set_sender(tx);
 
   match comp.compress(){
