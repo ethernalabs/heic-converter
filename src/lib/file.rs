@@ -1,4 +1,5 @@
 use std::path::Path;
+use crate::lib::png_convert::convert_to_png;
 
 struct FileMetaData {
   name: String,
@@ -25,9 +26,10 @@ impl FileMetaData {
   }
 }
 
-pub fn process(path: &str) {
+pub fn process(path: &str) -> () {
   let metadata = FileMetaData::new(&path);
   println!("Name: {}", metadata.name);
   println!("Directory: {}", metadata.directory);
   println!("path: {}", metadata.path);
+  convert_to_png(metadata.path);
 }
