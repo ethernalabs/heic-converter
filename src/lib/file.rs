@@ -17,7 +17,7 @@ impl FileMetaData {
   }
 
   fn get_file_name(path: &str) -> &str {
-    let file_name_os_str = Path::new(path).file_name().unwrap();
+    let file_name_os_str = Path::new(path).file_stem().unwrap();
     return file_name_os_str.to_str().unwrap()
   }
 
@@ -31,5 +31,5 @@ pub fn process(path: &str) -> () {
   println!("Name: {}", metadata.name);
   println!("Directory: {}", metadata.directory);
   println!("path: {}", metadata.path);
-  convert_to_png(metadata.path);
+  convert_to_png(metadata.path, metadata.name);
 }
