@@ -1,5 +1,5 @@
 mod cli;
-mod file;
+mod utils;
 use std::path::Path;
 use std::fs;
 
@@ -21,7 +21,7 @@ fn main() {
 
   match Path::new(&path).try_exists() {
       Ok(exist) =>  if exist {
-        file::process(&path);
+        utils::process(&path);
       } else {
           println!("Path doesn't exist")
       },
