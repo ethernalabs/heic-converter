@@ -1,5 +1,5 @@
+mod png_convert;
 use std::path::Path;
-use crate::lib::png_convert::convert_to_png;
 use std::path::PathBuf;
 use std::sync::mpsc;
 use image_compressor::FolderCompressor;
@@ -33,7 +33,7 @@ impl FileMetaData {
 
 pub fn process(path: &str) -> () {
   let metadata = FileMetaData::new(&path);
-  convert_to_png(metadata.path, metadata.name).expect("Can't convert to PNG");
+  png_convert::convert_to_png(metadata.path, metadata.name).expect("Can't convert to PNG");
   compress_image_folder();
 }
 
