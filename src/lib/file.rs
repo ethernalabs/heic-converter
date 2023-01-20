@@ -1,9 +1,9 @@
-mod lib;
 use std::path::Path;
 
 struct FileMetaData {
   name: String,
   directory: bool,
+  path: String
 }
 
 impl FileMetaData {
@@ -11,6 +11,7 @@ impl FileMetaData {
     FileMetaData {
       name: FileMetaData::get_file_name(&path).to_string(),
       directory: FileMetaData::is_directory(&path),
+      path: path.to_string(),
     }
   }
 
@@ -28,8 +29,5 @@ pub fn process(path: &str) {
   let metadata = FileMetaData::new(&path);
   println!("Name: {}", metadata.name);
   println!("Directory: {}", metadata.directory);
-}
-
-fn convert_to_png(images: Vec<String>) -> () {
-
+  println!("path: {}", metadata.path);
 }

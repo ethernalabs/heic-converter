@@ -1,5 +1,5 @@
 mod cli;
-mod file;
+mod lib;
 use std::path::Path;
 
 
@@ -9,7 +9,7 @@ fn main() {
 
     match Path::new(&path).try_exists() {
         Ok(exist) =>  if exist {
-            file::process(&path)
+            lib::file::process(&path)
         } else {
             println!("Path doesn't exist")
         },
