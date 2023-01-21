@@ -1,9 +1,9 @@
 mod png_convert;
-use std::path::Path;
-use std::path::PathBuf;
+use std::{io, fs};
+use std::path::{Path, PathBuf};
 use std::sync::mpsc;
-use image_compressor::FolderCompressor;
-use image_compressor::Factor;
+use image_compressor::{FolderCompressor, Factor};
+
 
 
 struct FileMetaData {
@@ -14,6 +14,7 @@ struct FileMetaData {
 
 impl FileMetaData {
   fn new(path: &str) -> FileMetaData {
+    
     FileMetaData {
       name: FileMetaData::get_file_name(&path).to_string(),
       directory: FileMetaData::is_directory(&path),
@@ -22,7 +23,13 @@ impl FileMetaData {
   }
 
   fn get_file_name(path: &str) -> &str {
-    let file_name_os_str = Path::new(path).file_stem().unwrap();
+    let file_path = Path::new(path);
+    let file_name_os_str = file_path.file_stem().unwrap();
+    if !FileMetaData::is_directory(path) {
+      if file_path.extension().unwrap().to_str().unwrap() != "heic" {
+        panic!("File format not supported");
+      }
+    }
     return file_name_os_str.to_str().unwrap()
   }
 
@@ -33,8 +40,23 @@ impl FileMetaData {
 
 pub fn process(path: &str) -> () {
   let metadata = FileMetaData::new(&path);
-  png_convert::convert_to_png(metadata.path, metadata.name).expect("Can't convert to PNG");
+  if !metadata.directory {
+    png_convert::convert_to_png(metadata.path, metadata.name).expect("Can't convert to PNG");
+  } else {
+    convert_dir_to_png(&path);
+  }
+
   compress_image_folder();
+
+}
+
+fn convert_dir_to_png(path: &str) -> io::Result<()> {
+  let mut entries = fs::read_dir(&path)?
+    .map(|res| res.map(|e| e.path()))
+    .collect::<Result<Vec<_>, io::Error>>()?;
+  
+  entries.sort();
+  Ok(())
 }
 
 fn compress_image_folder() -> () {
