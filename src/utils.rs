@@ -27,6 +27,8 @@ impl FileMetaData {
     let file_name_os_str = file_path.file_stem().unwrap();
     if !FileMetaData::is_directory(path) {
       if file_path.extension().unwrap().to_str().unwrap() != "heic" {
+        // TO DO: Change to Err or skip if file not supported
+        // TO DO: Possible change the whole flow of converting the image
         panic!("File format not supported");
       }
     }
@@ -43,7 +45,7 @@ pub fn process(path: &str) -> () {
   if !metadata.directory {
     png_convert::convert_to_png(metadata.path, metadata.name).expect("Can't convert to PNG");
   } else {
-    convert_dir_to_png(&path);
+    convert_dir_to_png(&path).expect("Can't convert the files inside the directory");
   }
 
   compress_image_folder();
@@ -56,6 +58,12 @@ fn convert_dir_to_png(path: &str) -> io::Result<()> {
     .collect::<Result<Vec<_>, io::Error>>()?;
   
   entries.sort();
+
+  for file in entries {
+    let file_path = file.to_str().unwrap();
+    let file_metadata = FileMetaData::new(&file_path);
+    png_convert::convert_to_png(file_metadata.path, file_metadata.name).expect("Can't convert to PNG");
+  }
   Ok(())
 }
 
