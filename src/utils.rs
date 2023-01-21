@@ -5,7 +5,7 @@ use std::sync::mpsc;
 use image_compressor::{FolderCompressor, Factor};
 
 
-
+#[derive(Debug)]
 struct FileMetaData {
   name: String,
   directory: bool,
@@ -13,39 +13,40 @@ struct FileMetaData {
 }
 
 impl FileMetaData {
-  fn new(path: &str) -> FileMetaData {
-    
-    FileMetaData {
-      name: FileMetaData::get_file_name(&path).to_string(),
-      directory: FileMetaData::is_directory(&path),
-      path: path.to_string(),
+  fn new(path: &str) -> Result<FileMetaData, &'static str> {
+    match FileMetaData::get_file_name(&path) {
+      Ok(name) => Ok(FileMetaData {
+                    name: name,
+                    directory: Path::new(&path).is_dir(),
+                    path: path.to_string(),
+                  }),
+      Err(e) => Err(e)
     }
   }
 
-  fn get_file_name(path: &str) -> &str {
+  fn get_file_name(path: &str) -> Result<String, &'static str> {
     let file_path = Path::new(path);
     let file_name_os_str = file_path.file_stem().unwrap();
-    if !FileMetaData::is_directory(path) {
-      if file_path.extension().unwrap().to_str().unwrap() != "heic" {
-        // TO DO: Change to Err or skip if file not supported
-        // TO DO: Possible change the whole flow of converting the image
-        panic!("File format not supported");
-      }
-    }
-    return file_name_os_str.to_str().unwrap()
-  }
 
-  fn is_directory(path: &str) -> bool {
-    Path::new(&path).is_dir() 
+    if file_path.is_dir() { 
+      Ok(file_name_os_str.to_str().unwrap().to_owned())
+    } else if file_path.extension().unwrap().to_str().unwrap() == "heic" {
+      Ok(file_name_os_str.to_str().unwrap().to_owned())
+    } else {
+      Err("File type not supported")
+    }
   }
 }
 
 pub fn process(path: &str) -> () {
   let metadata = FileMetaData::new(&path);
-  if !metadata.directory {
-    png_convert::convert_to_png(metadata.path, metadata.name).expect("Can't convert to PNG");
-  } else {
-    convert_dir_to_png(&path).expect("Can't convert the files inside the directory");
+  match metadata {
+    Ok(m) => if !m.directory {
+              png_convert::convert_to_png(m.path, m.name).expect("Can't convert to PNG");
+             } else {
+              convert_dir_to_png(&path).expect("Can't convert the files inside the directory");
+             }
+    Err(e) => println!("{}", e)
   }
 
   compress_image_folder();
@@ -61,8 +62,10 @@ fn convert_dir_to_png(path: &str) -> io::Result<()> {
 
   for file in entries {
     let file_path = file.to_str().unwrap();
-    let file_metadata = FileMetaData::new(&file_path);
-    png_convert::convert_to_png(file_metadata.path, file_metadata.name).expect("Can't convert to PNG");
+    match FileMetaData::new(&file_path) {
+      Ok(m) => png_convert::convert_to_png(m.path, m.name).expect("Can't convert to PNG"),
+      Err(e) => eprintln!("{}: {}", e, file_path)
+    }
   }
   Ok(())
 }

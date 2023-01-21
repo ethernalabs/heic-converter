@@ -23,7 +23,7 @@ fn main() {
       Ok(exist) =>  if exist {
         utils::process(&path);
       } else {
-          println!("Path doesn't exist")
+        println!("Path doesn't exist")
       },
       Err(_) => println!("Path error!")
   }
