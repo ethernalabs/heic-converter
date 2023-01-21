@@ -28,9 +28,8 @@ impl FileMetaData {
     let file_path = Path::new(path);
     let file_name_os_str = file_path.file_stem().unwrap();
 
-    if file_path.is_dir() { 
-      Ok(file_name_os_str.to_str().unwrap().to_owned())
-    } else if file_path.extension().unwrap().to_str().unwrap() == "heic" {
+    if file_path.is_dir() || 
+       file_path.extension().unwrap().to_str().unwrap() == "heic" { 
       Ok(file_name_os_str.to_str().unwrap().to_owned())
     } else {
       Err("File type not supported")
