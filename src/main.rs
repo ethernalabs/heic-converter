@@ -15,17 +15,17 @@ fn main() {
         fs::create_dir("output").expect("Can't create folder");
         fs::create_dir("output/uncompressed").expect("Can't create folder");
         fs::create_dir("output/compressed").expect("Can't create folder");
-      }
+      },
       Err(_) => ()
   }
 
   match Path::new(&path).try_exists() {
-      Ok(exist) =>  if exist {
-        utils::process(&path);
-      } else {
-        println!("Path doesn't exist")
-      },
-      Err(_) => println!("Path error!")
+    Ok(exist) =>  if exist {
+      utils::process(&path);
+    } else {
+      println!("Path doesn't exist")
+    },
+    Err(_) => println!("Path error!")
   }
 }
   
