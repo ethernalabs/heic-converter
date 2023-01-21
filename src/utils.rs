@@ -53,11 +53,9 @@ pub fn process(path: &str) -> () {
 }
 
 fn convert_dir_to_png(path: &str) -> io::Result<()> {
-  let mut entries = fs::read_dir(&path)?
+  let entries = fs::read_dir(&path)?
     .map(|res| res.map(|e| e.path()))
     .collect::<Result<Vec<_>, io::Error>>()?;
-  
-  entries.sort();
 
   for file in entries {
     let file_path = file.to_str().unwrap();
@@ -82,6 +80,6 @@ fn compress_image_folder() -> () {
 
   match comp.compress(){
       Ok(_) => {},
-      Err(e) => println!("Cannot compress the folder!: {}", e),
+      Err(e) => eprintln!("Cannot compress the folder!: {}", e),
   }
 }
